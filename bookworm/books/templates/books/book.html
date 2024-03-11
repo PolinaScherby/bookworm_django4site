@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="w3-margin-left">{{ book.title }}</h1>
+<div class="w3-row-padding">
+    <div class="w3-col w3-half w3-padding">
+        <h3>By <a href="{{ book.author.get_absolute_url }}">{{ book.author.name }}</a>, {{ book.first_published }}</h3>
+    </div>
+    {% if book.average_rating %}
+    <div class="w3-col w3-half w3-right-align">
+        <h3>Average Rating: <div class="star-rating" data-rating="{{ book.average_rating }}"></div></h3>
+    </div>
+    {% endif %}
+</div>
+
+<div class="w3-row-padding">
+    <div class="w3-col" style="width:30%">
+        {% if book.image %}
+        <p><img src="{{book.image.url}}" class="w3-image" style="height:750px"></p>
+        {% endif %}
+    </div>
+    <div class="w3-col" style="width:70%">
+        <p>{{ book.description|linebreaks }}</p>
+        {%if book.tags %}
+        <div class="row w3-padding-16">
+          <div class="col">
+              {%for tag in book.tags.all %}
+              <a href="{% url 'books_by_tags' tag.slug %}" style="text-decoration: none;" class="w3-tag w3-teal">{{ tag }}</a>
+              {%endfor %}
+          </div>
+        </div>
+        {%endif%}
+        {% if book.quote %}
+        <div class="w3-panel w3-leftbar w3-padding-16 w3-sand">
+            <p class="w3-xlarge w3-serif">
+                <i>{{ book.quote }}</i></p>
+            <p>{{ book.author }}</p>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<div class="w3-row-padding">
+    <div class="w3-col s8">
+        <h3 class="w3-margin-left w3-padding-16">Add a Review</h3>
+        {% if user.is_authenticated %}
+        <div class="w3-container">
+            <form method="post">
+            {% csrf_token %}
+
+            <!-- Star Rating -->
+            <style>
+                #id_rating {
+                    display: none; /* Hide the digital rating field */
+                }
+            </style>
+            <div class="w3-row-padding">
+                <label class="w3-text-teal"><b>Rating:</b></label>
+                <div class="w3-bar" id="star-rating" data-stars="5">
+                    <button class="w3-bar-item w3-button" type="button">&#9733;</button>
+                    <button class="w3-bar-item w3-button" type="button">&#9733;</button>
+                    <button class="w3-bar-item w3-button" type="button">&#9733;</button>
+                    <button class="w3-bar-item w3-button" type="button">&#9733;</button>
+                    <button class="w3-bar-item w3-button" type="button">&#9733;</button>
+                </div>
+                {{ form.rating }}
+            </div>
+
+            <!-- User's Review Text -->
+            <div class="w3-row-padding">
+                <label for="{{ form.text.id_for_label }}" class="w3-text-teal"><b>Your Review:</b></label>
+                {{ form.text }}
+            </div>
+            <div class="w3-padding">
+                <button type="submit" class="w3-button w3-teal">Submit Review</button>
+            </div>
+            </form>
+
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script>
+            $(document).ready(function() {
+                // Star rating functionality
+                $('#star-rating button').on('click', function() {
+                    var stars = $(this).index() + 1;
+                    $('#id_rating').val(stars);
+                    $('#star-rating button').removeClass('w3-text-teal');
+                    $(this).prevAll().addBack().addClass('w3-text-teal');
+                });
+
+                // Initial star highlighting
+                var initialRating = $('#id_rating').val();
+                $('#star-rating button:lt(' + initialRating + ')').addClass('w3-text-teal');
+
+                // Update comment text
+                $('#id_text').on('input', function() {
+                    var commentText = $(this).val();
+                    // Display the comment text wherever you want
+                    $('#comment-text-display').text(commentText);
+                });
+            });
+        </script>
+        </div>
+        {% else %}
+        <p>Please <a href="{% url 'users:login' %}">log in</a> to add a review.</p>
+        {% endif %}
+
+        {% if book.reviews.all %}
+            <h3 class="w3-margin-left w3-padding-16">Reviews</h3>
+            {% for review in reviews %}
+            <div class="w3-container w3-border w3-margin-bottom w3-margin-left w3-sand">
+                <div class="w3-row-padding">
+                    <div class="w3-col w3-half">
+                        <h3><div class="star-rating" data-rating="{{ review.rating }}"></div></h3>
+                    </div>
+                    <div class="w3-col w3-half w3-right-align">
+                        <div class="w3-container w3-padding w3-text-gray"><i>{{ review.time_create }}</i></div>
+                    </div>
+                </div>
+                <div class="w3-padding"><i class="w3-text-gray">{{ review.user.username }}</i> said:</div>
+                <div class="w3-padding">{{ review.text|linebreaks }}</div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

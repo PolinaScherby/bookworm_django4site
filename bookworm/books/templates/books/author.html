@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1 class="w3-margin-left">{{ title }}</h1>
+
+<div class="w3-row-padding">
+    <div class="w3-col" style="width:30%">
+        {% if author.photo %}
+        <p><img src="{{ author.photo.url }}" class="w3-image"></p>
+        {% endif %}
+    </div>
+    <div class="w3-col" style="width:70%">
+        <p>{{ author.description|linebreaks }}</p>
+        <hr>
+        {% if books %}
+        <h3>Books:</h3>
+        {% for book in books %}
+        <p><a href="{{ book.get_absolute_url }}">{{ book.title }}</a>, {{ book.first_published }}</p>
+        {% endfor %}
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

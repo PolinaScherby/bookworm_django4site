@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="w3-display-container" style="height:800px;">
+    <div class="w3-display-middle w3-card-4 w3-light-gray w3-padding" style="width:30%">
+        <h1 class="w3-center w3-teal">Profile Info</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% if user.avatar %}
+            <p class="w3-center"><img src="{{ user.avatar.url }}" class="w3-image" style="height:200px"></p>
+            {% else %}
+            <p class="w3-center"><img src="{{ default_avatar }}" class="w3-image" style="height:200px"></p>
+            {% endif %}
+
+            <div class="form-error">{{ form.non_field_errors }}</div>
+            {% for f in form %}
+            <p class="w3-padding"><label class="w3-text-teal w3-large w3-margin-right" for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
+            <div class="form-error">{{ f.errors }}</div>
+            {% endfor %}
+            <div class="w3-center w3-padding-16"><button type="submit" class="w3-teal w3-hover-green w3-round w3-button">Save</button></div>
+        </form>
+        <p><a href="{% url 'users:password_change' %}">Change password</a></p>
+    </div>
+</div>
+{% endblock %}
+

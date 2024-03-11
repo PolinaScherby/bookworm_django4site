@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="w3-display-container" style="height:800px;">
+    <div class="w3-display-middle w3-card-4 w3-light-gray w3-padding" style="width:30%">
+    <h1 class="w3-center w3-teal">Sign in</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}"/>
+        <div class="form-error">{{ form.non_field_errors }}</div>
+        {% for f in form %}
+        <p><label class="w3-text-teal w3-large" for="{{ f.id_for_label }}">{{ f.label }}</label>{{ f }}</p>
+        <div class="form-error">{{ f.errors }}</div>
+        {% endfor %}
+        <div class="w3-center w3-padding-16"><button type="submit" class="w3-teal w3-hover-green w3-round w3-button">Sign in</button></div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% load static %}
+{% load books_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'books/css/w3.css' %}">
+    <link rel="stylesheet" href="{% static 'books/css/books.css' %}">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2018.css">
+    <title>{{ title }}</title>
+</head>
+<body>
+<!-- Sidebar -->
+<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+  <button onclick="w3_close()" class="w3-bar-item w3-button w3-large">Close &times;</button>
+    {% show_genres %}
+</div>
+
+
+<div id="main">
+    <!-- Navbar-->
+{% block mainmenu %}
+
+    <ul class="w3-bar w3-teal">
+        <li class="w3-bar-item"><button class="w3-button w3-teal w3-large" onclick="w3_open()">☰</button></li>
+        <li class="w3-bar-item"><a href="{% url 'home' %}" class="w3-button w3-large">Home</a></li>
+        {% for m in mainmenu %}
+        <li class="w3-bar-item"><a href="{% url m.url_name %}" class="w3-button w3-large">{{ m.title }}</a></li>
+        {% endfor %}
+        {% if is_authenticated or request.user.is_authenticated %}
+        <li class="w3-bar-item w3-right">
+            <a href="{% url 'users:profile' request.user.pk %}" class="w3-button w3-large">
+                <i>{{ request.user.username }}</i>
+            </a> | <a href="{% url 'users:logout' %}" class="w3-button w3-large">Logout</a>
+        </li>
+        {% else %}
+        <li class="w3-bar-item w3-right">
+            <a href="{% url 'users:login' %}" class="w3-button w3-large">Login</a> |
+            <a href="{% url 'users:signin' %}" class="w3-button w3-large">Sign in</a>
+        </li>
+        {% endif %}
+    </ul>
+
+{% endblock mainmenu %}
+
+    <!-- Breadcrumbs ???-->
+    {% block breadcrumbs %}
+    {% endblock %}
+
+    <!-- Block Content -->
+    <div class="w3-container">
+    {% block content %}{% endblock %}
+    </div>
+
+    {% block navigation %}
+    {% endblock %}
+</div>
+
+<script>
+function w3_open() {
+  document.getElementById("main").style.marginLeft = "15%";
+  document.getElementById("mySidebar").style.width = "15%";
+  document.getElementById("mySidebar").style.display = "block";
+  document.getElementById("openNav").style.display = 'none';
+}
+function w3_close() {
+  document.getElementById("main").style.marginLeft = "0%";
+  document.getElementById("mySidebar").style.display = "none";
+  document.getElementById("openNav").style.display = "inline-block";
+}
+</script>
+</body>
+</html>

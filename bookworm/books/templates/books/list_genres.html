@@ -1,0 +1,8 @@
+{% for genre in genres %}
+<!-- doesn't work -->
+{% if genre.pk == genre_selected %}
+<a class="w3-bar-item w3-button" href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>
+{% else %}
+<a class="w3-bar-item w3-button w3-teal w3-hover-grey" href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>
+{% endif %}
+{% endfor %}

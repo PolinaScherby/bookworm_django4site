@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class="w3-margin-left">{{ title }}</h1>
+
+{% for book in books %}
+<div class="w3-row-padding">
+  <div class="w3-col s2">
+      {% if book.image %}
+      <p><img src="{{book.image.url}}" class="w3-image" style="width:250px"></p>
+      {% endif %}
+  </div>
+  <div class="w3-col s7">
+      <h2>{{ book.title }}</h2>
+      <p>Author: <a href="{{ book.author.get_absolute_url }}">{{ book.author }}</a></p>
+      <p>First published: {{ book.first_published }}</p>
+      {% with book.genre.all as genres %}
+      {% if genres %}
+      <p>Genre:
+          {% for genre in genres %}
+          <a href="{{ genre.get_absolute_url }}">{{ genre.title }}</a>
+          {% endfor %}
+      </p>
+      {% endif %}
+      {% endwith %}
+      {% autoescape off %}
+      <p> {{ book.description|linebreaks|truncatewords:50 }}</p>
+      {% endautoescape %}
+      <p><a href="{{ book.get_absolute_url }}">Details</a></p>
+      {% if book.tags %}
+      <div class="row">
+          <div class="col">
+              {% for tag in book.tags.all %}
+              <a href="{% url 'books_by_tags' tag.slug %}" style="text-decoration: none;" class="w3-tag w3-teal">{{ tag }}</a>
+                    {% endfor %}
+          </div>
+      </div>
+      {% endif %}
+      {% if book.user %}
+      <p style="color:gray">Added by: <a href="{% url 'users:profile' book.user.pk %}"><i>{{ book.user }}</i></a></p>
+      {% endif %}
+  </div>
+  <div class="w3-col s3">
+      {% if book.average_rating %}
+      <h3><div class="star-rating" data-rating="{{ book.average_rating }}"></div></h3>
+      {% endif %}
+      {% with last_review=book.reviews.first %}
+        {% if last_review %}
+            <p>User: <a href="{% url 'users:profile' last_review.user.pk %}">{{ last_review.user.username }}</a></p>
+            <p>Comment: {{ last_review.text|linebreaks|truncatewords:30 }}</p>
+        {% else %}
+            <p>No reviews yet</p>
+        {% endif %}
+      {% endwith %}
+  </div>
+
+
+</div>
+    {% if not forloop.last %}
+    <hr>
+    {% endif %}
+{% endfor %}
+{% endblock %}
+
+{% block navigation %}
+{% if page_obj.has_other_pages %}
+<div class="w3-center w3-padding-16">
+<div class="w3-bar">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="w3-button">&laquo;</a>
+    {% endif %}
+
+    {% for p in paginator.page_range %}
+    {% if page_obj.number == p %}
+    <p class="w3-button w3-teal">{{ p }}</p>
+    {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %}
+    <a href="?page={{ p }}" class="w3-button">{{ p }}</a>
+    {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="w3-button">&raquo;</a>
+    {% endif %}
+</div>
+</div>
+{% endif %}
+{% endblock %}
